@@ -17,6 +17,7 @@ public class BaseTest{
 	
 	public AppiumServiceHelper serviceHelper;
 	public AndroidDriverHelper driverHelper;
+	public String appPackage;
 	
 	@BeforeSuite(alwaysRun=true)
 	public void appiumStart() throws IOException {
@@ -40,7 +41,7 @@ public class BaseTest{
 		FileInputStream fis = new FileInputStream(System.getProperty("user.dir") + "\\src\\test\\java\\resources\\driver.properties");
 		driverProp.load(fis);
 		String deviceName = driverProp.getProperty("device_name");
-		String appPackage = driverProp.getProperty("app_package");
+		appPackage = driverProp.getProperty("app_package");
 		String appActivity = driverProp.getProperty("app_activity");
 		Boolean autoGrantPermissions = Boolean.parseBoolean(driverProp.getProperty("auto_grant_permissions"));
 		driverHelper = new AndroidDriverHelper( serviceHelper.getService().getUrl().toString(), deviceName, autoGrantPermissions, appPackage, appActivity );
@@ -48,27 +49,14 @@ public class BaseTest{
 	
 	@AfterClass
 	public void stopDriver() {
+		
+		driverHelper.getAndroidDriver().terminateApp(appPackage);
 		driverHelper.stopDriver();
 	}
 	
 	@AfterSuite(alwaysRun=true)
 	public void appiumStop() {
 		serviceHelper.stopService();
-	}
-	
-	public static void main(String[] args) throws IOException, URISyntaxException {
-		
-		BaseTest newTest = new BaseTest();
-		newTest.appiumStart();
-		newTest.startDriver();
-		
-		//in home activity
-		HomeActivity home = new HomeActivity(newTest.driverHelper.getAndroidDriver());
-		home.enterMeetingURL("https://noorul-videoconf-2131.app.100ms.live/meeting/phh-dmfz-mux");
-		home.tapJoin();
-		
-		newTest.stopDriver();
-		newTest.appiumStop();
 	}
 	
 }

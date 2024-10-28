@@ -30,4 +30,5 @@ public class MeetingActivity extends BaseActivity{
 		super.waitForElement(textvName);
 		return super.driver.findElement(textvName).getText();
 	}
+
 }
